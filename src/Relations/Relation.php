@@ -1,42 +1,172 @@
 <?php
 
-namespace LaravelDoctrine\Fluent\Relations;
+namespace LaravelDoctrine\Fluent\Builders\Traits;
 
-use Doctrine\ORM\Mapping\Builder\AssociationBuilder;
-use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
+use Doctrine\Inflector\GenericLanguageInflectorFactory;
+use Doctrine\Inflector\Inflector;
+use Doctrine\Inflector\InflectorFactory;
 use LaravelDoctrine\Fluent\Buildable;
+use LaravelDoctrine\Fluent\Relations\ManyToMany;
+use LaravelDoctrine\Fluent\Relations\ManyToOne;
+use LaravelDoctrine\Fluent\Relations\OneToMany;
+use LaravelDoctrine\Fluent\Relations\OneToOne;
+use LaravelDoctrine\Fluent\Relations\Relation;
 
-interface Relation extends Buildable
+trait Relations
 {
     /**
-     * @param string[] $cascade one of "persist", "remove", "merge", "detach", "refresh", "ALL"
+     * {@inheritdoc}
+     */
+    public function hasOne($entity, $field = null, callable $callback = null)
+    {
+        return $this->oneToOne($entity, $field, $callback)->ownedBy(
+            $this->guessSingularField($entity)
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function oneToOne($entity, $field = null, callable $callback = null)
+    {
+        return $this->addRelation(
+            new OneToOne(
+                $this->getBuilder(),
+                $this->getNamingStrategy(),
+                $this->guessSingularField($entity, $field),
+                $entity
+            ),
+            $callback
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function belongsTo($entity, $field = null, callable $callback = null)
+    {
+        return $this->manyToOne($entity, $field, $callback);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function manyToOne($entity, $field = null, callable $callback = null)
+    {
+        return $this->addRelation(
+            new ManyToOne(
+                $this->getBuilder(),
+                $this->getNamingStrategy(),
+                $this->guessSingularField($entity, $field),
+                $entity
+            ),
+            $callback
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasMany($entity, $field = null, callable $callback = null)
+    {
+        return $this->oneToMany($entity, $field, $callback);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function oneToMany($entity, $field = null, callable $callback = null)
+    {
+        return $this->addRelation(
+            new OneToMany(
+                $this->getBuilder(),
+                $this->getNamingStrategy(),
+                $this->guessPluralField($entity, $field),
+                $entity
+            ),
+            $callback
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function belongsToMany($entity, $field = null, callable $callback = null)
+    {
+        return $this->manyToMany($entity, $field, $callback);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function manyToMany($entity, $field = null, callable $callback = null)
+    {
+        return $this->addRelation(
+            new ManyToMany(
+                $this->getBuilder(),
+                $this->getNamingStrategy(),
+                $this->guessPluralField($entity, $field),
+                $entity
+            ),
+            $callback
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addRelation(Relation $relation, callable $callback = null)
+    {
+        $this->callbackAndQueue($relation, $callback);
+
+        return $relation;
+    }
+
+    /**
+     * @param string      $entity
+     * @param string|null $field
      *
-     * @return $this
+     * @return string
      */
-    public function cascade(array $cascade);
+    protected function guessSingularField($entity, $field = null)
+    {
+        return $field ?: $this->getInflector()->singularize(
+            lcfirst(basename(str_replace('\\', '/', $entity)))
+        );
+    }
 
     /**
-     * @param string $strategy one of "LAZY", "EAGER", "EXTRA_LAZY"
+     * @param string      $entity
+     * @param string|null $field
      *
-     * @return $this
+     * @return string
      */
-    public function fetch($strategy);
+    protected function guessPluralField($entity, $field = null)
+    {
+        return $field ?: $this->getInflector()->pluralize($this->guessSingularField($entity));
+    }
 
     /**
-     * @param string      $usage
-     * @param string|null $region
-     *
-     * @return AssociationBuilder
+     * @return \Doctrine\Inflector\Inflector
      */
-    public function cache($usage = 'READ_ONLY', $region = null);
+    protected function getInflector(): Inflector
+    {
+        return InflectorFactory::create()->build();
+    }
 
     /**
-     * @return ClassMetadataBuilder
+     * @return \Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder
      */
-    public function getBuilder();
+    abstract public function getBuilder();
 
     /**
-     * @return AssociationBuilder
+     * @param Buildable     $buildable
+     * @param callable|null $callback
      */
-    public function getAssociation();
+    abstract protected function callbackAndQueue(Buildable $buildable, callable $callback = null);
+
+    /**
+     * @return \Doctrine\ORM\Mapping\NamingStrategy
+     */
+    abstract public function getNamingStrategy();
 }
