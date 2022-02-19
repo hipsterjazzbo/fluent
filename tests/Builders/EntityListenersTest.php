@@ -39,7 +39,7 @@ class EntityListenersTest extends TestCase
      * @param string|null $method
      * @param string      $expectedMethod
      */
-    public function test_can_add_event_listeners($event, $listener, $method = null, $expectedMethod)
+    public function test_can_add_event_listeners($event, $listener, $method, $expectedMethod)
     {
         $this->builder->{$event}($listener, $method);
 

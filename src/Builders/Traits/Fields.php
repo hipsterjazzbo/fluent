@@ -3,6 +3,7 @@
 namespace LaravelDoctrine\Fluent\Builders\Traits;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types;
 use LaravelDoctrine\Fluent\Buildable;
 use LaravelDoctrine\Fluent\Builders\Field;
 
@@ -25,7 +26,7 @@ trait Fields
      */
     public function string($name, callable $callback = null)
     {
-        return $this->field(Type::STRING, $name, $callback);
+        return $this->field(Types::STRING, $name, $callback);
     }
 
     /**
@@ -33,7 +34,7 @@ trait Fields
      */
     public function text($name, callable $callback = null)
     {
-        return $this->field(Type::TEXT, $name, $callback);
+        return $this->field(Types::TEXT, $name, $callback);
     }
 
     /**
@@ -41,7 +42,7 @@ trait Fields
      */
     public function integer($name, callable $callback = null)
     {
-        return $this->field(Type::INTEGER, $name, $callback);
+        return $this->field(Types::INTEGER, $name, $callback);
     }
 
     /**
@@ -49,7 +50,7 @@ trait Fields
      */
     public function smallInteger($name, callable $callback = null)
     {
-        return $this->field(Type::SMALLINT, $name, $callback);
+        return $this->field(Types::SMALLINT, $name, $callback);
     }
 
     /**
@@ -57,7 +58,7 @@ trait Fields
      */
     public function bigInteger($name, callable $callback = null)
     {
-        return $this->field(Type::BIGINT, $name, $callback);
+        return $this->field(Types::BIGINT, $name, $callback);
     }
 
     /**
@@ -65,7 +66,7 @@ trait Fields
      */
     public function guid($name, callable $callback = null)
     {
-        return $this->field(Type::GUID, $name, $callback);
+        return $this->field(Types::GUID, $name, $callback);
     }
 
     /**
@@ -73,7 +74,7 @@ trait Fields
      */
     public function blob($name, callable $callback = null)
     {
-        return $this->field(Type::BLOB, $name, $callback);
+        return $this->field(Types::BLOB, $name, $callback);
     }
 
     /**
@@ -81,7 +82,7 @@ trait Fields
      */
     public function object($name, callable $callback = null)
     {
-        return $this->field(Type::OBJECT, $name, $callback);
+        return $this->field(Types::OBJECT, $name, $callback);
     }
 
     /**
@@ -89,7 +90,7 @@ trait Fields
      */
     public function float($name, callable $callback = null)
     {
-        return $this->field(Type::FLOAT, $name, $callback)->precision(8)->scale(2);
+        return $this->field(Types::FLOAT, $name, $callback)->precision(8)->scale(2);
     }
 
     /**
@@ -97,7 +98,7 @@ trait Fields
      */
     public function decimal($name, callable $callback = null)
     {
-        return $this->field(Type::DECIMAL, $name, $callback)->precision(8)->scale(2);
+        return $this->field(Types::DECIMAL, $name, $callback)->precision(8)->scale(2);
     }
 
     /**
@@ -105,7 +106,7 @@ trait Fields
      */
     public function boolean($name, callable $callback = null)
     {
-        return $this->field(Type::BOOLEAN, $name, $callback);
+        return $this->field(Types::BOOLEAN, $name, $callback);
     }
 
     /**
@@ -113,7 +114,7 @@ trait Fields
      */
     public function simpleArray($name, callable $callback = null)
     {
-        return $this->field(Type::SIMPLE_ARRAY, $name, $callback);
+        return $this->field(Types::SIMPLE_ARRAY, $name, $callback);
     }
 
     /**
@@ -121,7 +122,7 @@ trait Fields
      */
     public function jsonArray($name, callable $callback = null)
     {
-        return $this->field(Type::JSON_ARRAY, $name, $callback);
+        return $this->field(Types::JSON, $name, $callback);
     }
 
     /**
@@ -129,7 +130,7 @@ trait Fields
      */
     public function binary($name, callable $callback = null)
     {
-        return $this->field(Type::BINARY, $name, $callback)->nullable();
+        return $this->field(Types::BINARY, $name, $callback)->nullable();
     }
 
     /**
